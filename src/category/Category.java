@@ -52,15 +52,15 @@ public class Category {
         this.description = description;
     }
     
-    public void addProduct(Product product) {
-        if (product != null) {
-            product.setCategory(this.name);
-            this.products.add(product);
-        }
+    public boolean addProduct(Product product) {
+        if (product == null) return false;
+        if (products.contains(product)) return false; // reject duplicate reference
+        products.add(product);
+        return true;
     }
     
-    public void removeProduct(Product product) {
-        this.products.remove(product);
+    public boolean removeProduct(Product product) {
+        return products.remove(product);
     }
     
     public int getProductCount() {
@@ -84,7 +84,7 @@ public class Category {
         System.out.println();
         
         for (Product product : products) {
-            System.out.println("- " + product.getName() + " (ID: " + product.getProductId() + ") - $" + String.format("%.2f", product.getPrice()));
+            System.out.println("- " + product.getName() + " (ID: " + product.getId() + ") - $" + String.format("%.2f", product.getPrice()));
         }
         System.out.println("=====================================");
     }

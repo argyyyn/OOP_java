@@ -1,40 +1,39 @@
 package product;
 
+import category.Category;
+
 public class Product {
     // Product attributes
-    private String productId;
+    private String id;
     private String name;
     private String description;
     private double price;
     private int quantity;
-    private String category;
-    private boolean inStock;
+    private Category category;
     
     // Default constructor
     public Product() {
-        this.productId = "P000";
+        this.id = "P000";
         this.name = "Unknown Product";
         this.description = "No description available";
         this.price = 0.0;
         this.quantity = 0;
-        this.category = "General";
-        this.inStock = false;
+        this.category = null;
     }
     
     // Parameterized constructor
-    public Product(String productId, String name, String description, double price, int quantity, String category) {
-        this.productId = productId;
+    public Product(String id, String name, String description, double price, int quantity, Category category) {
+        this.id = id;
         this.name = name;
         this.description = description;
         this.price = price;
         this.quantity = quantity;
         this.category = category;
-        this.inStock = quantity > 0;
     }
     
     // Getter methods
-    public String getProductId() {
-        return productId;
+    public String getId() {
+        return id;
     }
     
     public String getName() {
@@ -53,106 +52,102 @@ public class Product {
         return quantity;
     }
     
-    public String getCategory() {
+    public Category getCategory() {
         return category;
     }
     
-    public boolean isInStock() {
-        return inStock;
+    // Guarded mutators
+    public boolean trySetId(String id) {
+        if (id != null && id.trim().length() >= 2) {
+            this.id = id.trim();
+            return true;
+        }
+        return false;
     }
     
-    // Setter methods
-    public void setProductId(String productId) {
-        this.productId = productId;
+    public boolean trySetName(String name) {
+        if (name != null && name.trim().length() >= 2) {
+            this.name = name.trim();
+            return true;
+        }
+        return false;
     }
     
-    public void setName(String name) {
-        this.name = name;
+    public boolean trySetDescription(String description) {
+        if (description == null || description.trim().length() <= 200) {
+            this.description = description == null ? null : description.trim();
+            return true;
+        }
+        return false;
     }
     
-    public void setDescription(String description) {
-        this.description = description;
-    }
-    
-    public void setPrice(double price) {
-        if (price >= 0) {
+    public boolean trySetPrice(double price) {
+        if (price >= 0.0 && price <= 1_000_000.0) {
             this.price = price;
-        } else {
-            System.out.println("Price cannot be negative!");
+            return true;
         }
+        return false;
     }
     
-    public void setQuantity(int quantity) {
-        if (quantity >= 0) {
+    public boolean trySetQuantity(int quantity) {
+        if (quantity >= 0 && quantity <= 1_000_000) {
             this.quantity = quantity;
-            this.inStock = quantity > 0;
-        } else {
-            System.out.println("Quantity cannot be negative!");
+            return true;
         }
+        return false;
     }
     
-    public void setCategory(String category) {
-        this.category = category;
+    public boolean trySetCategory(Category category) {
+        if (category != null) {
+            this.category = category;
+            return true;
+        }
+        return false;
     }
     
-    // Business methods
-    public void addStock(int amount) {
-        if (amount > 0) {
-            this.quantity += amount;
-            this.inStock = true;
-            System.out.println("Added " + amount + " units to stock. New quantity: " + this.quantity);
-        } else {
-            System.out.println("Cannot add negative or zero stock!");
-        }
+    // Inventory & business operations (guarded)
+    public boolean addStock(int amount) {
+        if (amount <= 0) return false;
+        long next = (long) quantity + amount; // avoid overflow
+        if (next > 1_000_000L) return false;
+        quantity += amount;
+        return true;
     }
     
     public boolean sellProduct(int amount) {
-        if (amount > 0 && amount <= this.quantity) {
-            this.quantity -= amount;
-            this.inStock = this.quantity > 0;
-            System.out.println("Sold " + amount + " units. Remaining quantity: " + this.quantity);
-            return true;
-        } else {
-            System.out.println("Cannot sell " + amount + " units. Available: " + this.quantity);
-            return false;
-        }
+        if (amount <= 0 || amount > quantity) return false;
+        quantity -= amount;
+        return true;
     }
     
     public double calculateTotalValue() {
-        return this.price * this.quantity;
+        return price * quantity;
     }
     
-    public void applyDiscount(double discountPercent) {
-        if (discountPercent > 0 && discountPercent <= 100) {
-            this.price = this.price * (1 - discountPercent / 100);
-            System.out.println("Applied " + discountPercent + "% discount. New price: $" + String.format("%.2f", this.price));
-        } else {
-            System.out.println("Invalid discount percentage!");
-        }
+    public boolean applyDiscount(double percent) {
+        if (percent < 0 || percent > 90) return false;
+        double factor = 1 - percent / 100.0;
+        double next = price * factor;
+        // keep within allowed bounds
+        if (next < 0.0 || next > 1_000_000.0) return false;
+        price = next;
+        return true;
+    }
+    
+    public String getStockStatus() {
+        if (quantity == 0) return "OUT_OF_STOCK";
+        if (quantity <= 10) return "LOW";
+        return "IN_STOCK";
     }
     
     public void displayProductInfo() {
-        System.out.println("=== PRODUCT INFORMATION ===");
-        System.out.println("Product ID: " + productId);
-        System.out.println("Name: " + name);
-        System.out.println("Description: " + description);
-        System.out.println("Price: $" + String.format("%.2f", price));
-        System.out.println("Quantity: " + quantity);
-        System.out.println("Category: " + category);
-        System.out.println("In Stock: " + (inStock ? "Yes" : "No"));
-        System.out.println("Total Value: $" + String.format("%.2f", calculateTotalValue()));
-        System.out.println("==========================");
+        System.out.println(toString());
     }
     
     @Override
     public String toString() {
-        return "Product{" +
-                "id='" + productId + '\'' +
-                ", name='" + name + '\'' +
-                ", price=" + String.format("%.2f", price) +
-                ", quantity=" + quantity +
-                ", category='" + category + '\'' +
-                ", inStock=" + inStock +
-                '}';
+        return "Product{id='%s', name='%s', price=%.2f, qty=%d, status=%s, category=%s}"
+            .formatted(id, name, price, quantity, getStockStatus(),
+                       category == null ? "NONE" : category.getName());
     }
 }

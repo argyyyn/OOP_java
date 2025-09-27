@@ -3,6 +3,11 @@ package product;
 import category.Category;
 
 public class Product {
+    // Static members
+    public static final String DEFAULT_CURRENCY = "KZT";
+    private static int SEQ = 1;
+    private static int createdCount = 0;
+    
     // Product attributes
     private String id;
     private String name;
@@ -11,24 +16,57 @@ public class Product {
     private int quantity;
     private Category category;
     
-    // Default constructor
+    // No-args constructor - sets safe defaults
     public Product() {
-        this.id = "P000";
-        this.name = "Unknown Product";
-        this.description = "No description available";
+        this.id = "AUTO-" + nextSeq();
+        this.name = "Unnamed";
+        this.description = null;
         this.price = 0.0;
         this.quantity = 0;
         this.category = null;
+        createdCount++;
     }
     
-    // Parameterized constructor
+    // Required-args constructor - id, name, price
+    public Product(String id, String name, double price) {
+        this(); // chain to no-args constructor for defaults
+        trySetId(id);
+        trySetName(name);
+        trySetPrice(price);
+    }
+    
+    // Full-args constructor - id, name, description, price, quantity, category
     public Product(String id, String name, String description, double price, int quantity, Category category) {
-        this.id = id;
-        this.name = name;
-        this.description = description;
-        this.price = price;
-        this.quantity = quantity;
-        this.category = category;
+        this(); // chain to no-args constructor for defaults
+        trySetId(id);
+        trySetName(name);
+        trySetDescription(description);
+        trySetPrice(price);
+        trySetQuantity(quantity);
+        trySetCategory(category);
+    }
+    
+    // Static helper method
+    private static String nextSeq() {
+        return String.valueOf(SEQ++);
+    }
+    
+    // Static factory method to get created count
+    public static int getCreatedCount() {
+        return createdCount;
+    }
+    
+    // Static factory methods
+    public static Product of(String id, String name, double price) {
+        return new Product(id, name, price);
+    }
+    
+    public static Product freeSample(String name) {
+        Product product = new Product();
+        product.trySetName(name);
+        product.trySetPrice(0.0);
+        product.trySetQuantity(1);
+        return product;
     }
     
     // Getter methods
@@ -155,6 +193,3 @@ public class Product {
 
 
 
-// Abulkair Inkar 40958
-// Maratova Yerkezhan 40607
-// utkelbayeva alina 40037

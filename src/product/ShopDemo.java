@@ -4,56 +4,67 @@ import category.Category;
 
 public class ShopDemo {
     public static void main(String[] args) {
-        System.out.println("=== SHOP DEMO - ENCAPSULATION & VALIDATION ===\n");
+        System.out.println("=== SHOP DEMO - CONSTRUCTORS & STATIC FACTORY ===\n");
         
-        // Create category and product
-        Category stationery = new Category("C001", "Stationery", "Office supplies and writing materials");
-        Product pen = new Product();
+        // Create category for testing
+        Category electronics = new Category("C001", "Electronics", "Electronic devices and accessories");
         
-        // Set up product using guarded mutators
-        System.out.println("Setting up product:");
-        System.out.println("trySetId('P001'): " + pen.trySetId("P001") + " | id=" + pen.getId());
-        System.out.println("trySetName('Pen'): " + pen.trySetName("Pen") + " | name=" + pen.getName());
-        System.out.println("trySetDescription('Blue ink ballpoint pen'): " + pen.trySetDescription("Blue ink ballpoint pen") + " | desc=" + pen.getDescription());
-        System.out.println("trySetPrice(200.0): " + pen.trySetPrice(200.0) + " | price=" + pen.getPrice());
-        System.out.println("trySetQuantity(5): " + pen.trySetQuantity(5) + " | qty=" + pen.getQuantity());
-        System.out.println("trySetCategory(stationery): " + pen.trySetCategory(stationery) + " | category=" + (pen.getCategory() != null ? pen.getCategory().getName() : "null"));
+        // Test all constructors and static factories
+        System.out.println("=== TESTING CONSTRUCTORS AND STATIC FACTORIES ===\n");
         
-        System.out.println("\nInitial product state:");
-        System.out.println(pen);
-        System.out.println("Status: " + pen.getStockStatus());
+        // 1. No-args constructor
+        Product p1 = new Product(); // no-args
+        System.out.println("1. No-args constructor:");
+        System.out.println(p1);
         
-        // Accepted operations
-        System.out.println("\n=== ACCEPTED OPERATIONS ===");
-        System.out.println("trySetPrice(250.0): " + pen.trySetPrice(250.0) + " | price=" + pen.getPrice());
-        System.out.println("addStock(20): " + pen.addStock(20) + " | qty=" + pen.getQuantity());
-        System.out.println("Status after restock: " + pen.getStockStatus());
+        // 2. Required-args constructor
+        Product p2 = new Product("P100", "Notebook", 950.0); // required-args
+        System.out.println("\n2. Required-args constructor:");
+        System.out.println(p2);
         
-        // Rejected operations
-        System.out.println("\n=== REJECTED OPERATIONS ===");
-        System.out.println("trySetPrice(-1.0): " + pen.trySetPrice(-1.0) + " | price=" + pen.getPrice());
-        System.out.println("trySetName('A'): " + pen.trySetName("A") + " | name=" + pen.getName());
-        System.out.println("trySetDescription('" + "x".repeat(60) + "'): " + pen.trySetDescription("x".repeat(201)) + " | desc length=" + (pen.getDescription() != null ? pen.getDescription().length() : "null"));
-        System.out.println("sellProduct(10000): " + pen.sellProduct(10000) + " | qty=" + pen.getQuantity());
-        System.out.println("applyDiscount(200): " + pen.applyDiscount(200) + " | price=" + pen.getPrice());
-        System.out.println("addStock(-5): " + pen.addStock(-5) + " | qty=" + pen.getQuantity());
+        // 3. Full-args constructor
+        Product p3 = new Product("P200", "Headphones", "BT 5.0", 14990.0, 5, electronics); // full-args
+        System.out.println("\n3. Full-args constructor:");
+        System.out.println(p3);
         
-        // Valid operations
-        System.out.println("\n=== VALID OPERATIONS ===");
-        System.out.println("sellProduct(10): " + pen.sellProduct(10) + " | qty=" + pen.getQuantity());
-        System.out.println("Status after sale: " + pen.getStockStatus());
-        System.out.println("applyDiscount(15): " + pen.applyDiscount(15) + " | price=" + pen.getPrice());
+        // 4. Static factory - of()
+        Product p4 = Product.of("P300", "Pencil", 120.0); // static factory
+        System.out.println("\n4. Static factory - of():");
+        System.out.println(p4);
         
-        // Category operations
-        System.out.println("\n=== CATEGORY OPERATIONS ===");
-        System.out.println("Add to category #1: " + stationery.addProduct(pen));
-        System.out.println("Add to category #2 (duplicate): " + stationery.addProduct(pen));
-        System.out.println("Add null product: " + stationery.addProduct(null));
+        // 5. Static factory - freeSample()
+        Product p5 = Product.freeSample("Sticker"); // static factory
+        System.out.println("\n5. Static factory - freeSample():");
+        System.out.println(p5);
         
-        // Final state
-        System.out.println("\n=== FINAL STATE ===");
-        System.out.println(pen);
-        System.out.println("Total value: $" + String.format("%.2f", pen.calculateTotalValue()));
-        System.out.println("Category product count: " + stationery.getProductCount());
+        // Test invalid constructor arguments to show guards work
+        System.out.println("\n=== TESTING GUARDS WITH INVALID ARGUMENTS ===");
+        Product p6 = new Product("", "A", -5.0); // invalid id, name, price
+        System.out.println("Invalid constructor args (empty id, short name, negative price):");
+        System.out.println(p6);
+        
+        // Show auto-generated IDs
+        System.out.println("\n=== AUTO-GENERATED IDs ===");
+        System.out.println("p1 id: " + p1.getId());
+        System.out.println("p5 id: " + p5.getId());
+        
+        // Show created count
+        System.out.println("\n=== CREATED COUNT ===");
+        System.out.println("Created count = " + Product.getCreatedCount());
+        
+        // Show default currency
+        System.out.println("\n=== STATIC MEMBERS ===");
+        System.out.println("Default currency: " + Product.DEFAULT_CURRENCY);
+        
+        // Final summary
+        System.out.println("\n=== FINAL SUMMARY ===");
+        System.out.println("All products created:");
+        System.out.println(p1);
+        System.out.println(p2);
+        System.out.println(p3);
+        System.out.println(p4);
+        System.out.println(p5);
+        System.out.println(p6);
+        System.out.println("\nTotal products created: " + Product.getCreatedCount());
     }
 }

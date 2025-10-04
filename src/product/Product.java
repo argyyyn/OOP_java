@@ -7,14 +7,15 @@ public class Product {
     public static final String DEFAULT_CURRENCY = "KZT";
     private static int SEQ = 1;
     private static int createdCount = 0;
-    
+
+
     // Product attributes
     private String id;
     private String name;
     private String description;
     private double price;
     private int quantity;
-    private Category category;
+    private Category category;   
     
     // No-args constructor - sets safe defaults
     public Product() {

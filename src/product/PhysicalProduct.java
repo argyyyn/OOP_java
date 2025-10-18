@@ -1,6 +1,8 @@
 package product;
 
-public class PhysicalProduct extends Product {
+import product.shipping.Shippable;
+
+public class PhysicalProduct extends Product implements Shippable {
     // Private fields
     private double weightKg;
     private double lengthCm;
@@ -82,6 +84,9 @@ public class PhysicalProduct extends Product {
         double billable = Math.max(weightKg, volumetric);
         return billable * 100; // Cost in KZT
     }
+    
+    // Implementation of Shippable interface
+    @Override public double shippingCost() { return estimateShippingCost(); }
     
     @Override
     public String toString() {

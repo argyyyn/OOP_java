@@ -183,6 +183,14 @@ public class Product {
         System.out.println(toString());
     }
     
+    // Method to calculate final price with promotion (for Task 6)
+    public double finalPrice(int qty, product.pricing.PricePolicy policy) {
+        if (policy == null) {
+            return getPrice() * qty;
+        }
+        return policy.apply(this, qty);
+    }
+    
     @Override
     public String toString() {
         return "Product{id='%s', name='%s', price=%.2f, qty=%d, status=%s, category=%s}"
